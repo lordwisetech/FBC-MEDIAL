@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: your-service-name
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: MONGO_URI
+        value: <your-mongodb-uri>
+      - key: NODE_ENV
+        value: production
+    routes:
+      - type: static
+        name: public
+        path: /public/uploads
