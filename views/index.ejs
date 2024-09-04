@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Upload and Display</title>
+</head>
+<body>
+  <h1>Upload an Image</h1>
+  <form action="/upload" method="post" enctype="multipart/form-data">
+    <label for="name">Name:</label>
+    <input type="text" name="name" id="name" required>
+    <label for="thumbnail">Thumbnail:</label>
+    <input type="file" name="thumbnail" id="thumbnail" accept="image/*" required>
+    <button type="submit">Upload</button>
+  </form>
+
+  <h2>Uploaded Images</h2>
+  <div>
+    <% slides.forEach(slide => { %>
+      <div>
+        <h3><%= slide.name %></h3>
+        <img src="data:<%= slide.thumbnail.contentType %>;base64,<%= slide.thumbnail.data.toString('base64') %>" alt="Image" style="max-width: 300px;">
+      </div>
+    <% }) %>
+  </div>
+</body>
+</html>
