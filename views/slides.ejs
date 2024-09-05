@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uploaded Slides</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 15px 0;
+            background-color: #333;
+            color: white;
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 18px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 100px auto;
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 250px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card:before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.2), rgba(255,255,255,0));
+            transform: rotate(45deg);
+            z-index: 0;
+            transition: all 0.5s;
+        }
+
+        .card:hover:before {
+            top: -30%;
+            left: -30%;
+            transform: rotate(25deg);
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #333;
+            background-color: blueviolet;
+            padding: 10px 15px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        a:hover {
+            background-color:blue;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="/">Home</a>
+        <a href="/upload">Upload New Slide</a>
+    </div>
+
+    <div class="container">
+        <% slides.forEach(slide => { %>
+            <div class="card">
+                <div class="card-content">
+                    <h2><%= slide.title %></h2>
+
+                    <% if (slide.image && slide.image.data && slide.image.contentType) { %>
+                        <img src="data:<%= slide.image.contentType %>;base64,<%= slide.image.data.toString('base64') %>" alt="<%= slide.title %> Thumbnail">
+                    <% } else { %>
+                        <p>No thumbnail available</p>
+                    <% } %>
+
+                    <% if (slide.slide && slide.slide.data && slide.slide.contentType) { %>
+                        <a href="data:<%= slide.slide.contentType %>;base64,<%= slide.slide.data.toString('base64') %>" download="<%= slide.title %>">Download Slide</a>
+                    <% } else { %>
+                        <p>No slide available for download</p>
+                    <% } %>
+                </div>
+            </div>
+        <% }); %>
+    </div>
+</body>
+</html>

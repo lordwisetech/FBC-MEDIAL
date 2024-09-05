@@ -1,67 +1,65 @@
 require('dotenv').config();
 const express = require('express');
-const multer = require('multer');
 const mongoose = require('mongoose');
+const multer = require('multer');
 const path = require('path');
+const Slide = require('./models/Slides');
+
 const app = express();
 
-// Connect to MongoDB using the environment variable
-mongoose.connect(process.env.MONGO_URI, )
-  .then(() => console.log('Database connected'))
-  .catch(err => console.error('Database connection error:', err));
-
-const slideSchema = new mongoose.Schema({
-  name: String,
-  thumbnail: { data: Buffer, contentType: String },
-});
-
-const Slide = mongoose.model('Slide', slideSchema);
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => console.log('Connected to MongoDB'))
+    .catch(err => console.error('Could not connect to MongoDB...', err));
 
 // Set up EJS
 app.set('view engine', 'ejs');
 
-// Set up middleware
+// Set up body parser
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
 
-// Multer setup for file uploads
+// Set up Multer for file uploads
 const storage = multer.memoryStorage();
-const upload = multer({ storage });
+const upload = multer({ storage: storage });
 
-// Serve static files (for displaying images)
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Serve static files
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Routes
-app.get('/', async (req, res) => {
-  try {
-    const slides = await Slide.find({});
-    res.render('index', { slides });
-  } catch (error) {
-    res.status(500).send('Error fetching slides');
-  }
+// Route to display the upload form
+app.get('/upload', (req, res) => {
+    res.render('index');  // Renders the upload form
 });
 
-app.post('/upload', upload.single('thumbnail'), async (req, res) => {
-  const { name } = req.body;
-  const { file } = req;
+// Route to handle file upload
+app.post('/upload', upload.fields([{ name: 'image' }, { name: 'slide' }]), async (req, res) => {
+    const { title } = req.body;
+    const image = req.files['image'][0];
+    const slide = req.files['slide'][0];
 
-  try {
-    const slide = new Slide({
-      name,
-      thumbnail: {
-        data: file.buffer,
-        contentType: file.mimetype,
-      },
+    const newSlide = new Slide({
+        title,
+        image: {
+            data: image.buffer,
+            contentType: image.mimetype
+        },
+        slide: {
+            data: slide.buffer,
+            contentType: slide.mimetype
+        }
     });
-    await slide.save();
+
+    await newSlide.save();
     res.redirect('/');
-  } catch (error) {
-    res.status(500).send('Error uploading slide');
-  }
+});
+
+// Route to display all slides
+app.get('/', async (req, res) => {
+    const slides = await Slide.find({});
+    res.render('slides', { slides });  // This is now your home page
 });
 
 // Start server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
