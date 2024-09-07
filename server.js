@@ -6,6 +6,7 @@ const path = require('path');
 const Slide = require('./models/Slides');
 
 const app = express();
+app.use(express.static('public'));
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
