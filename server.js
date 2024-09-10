@@ -5,6 +5,12 @@ const multer = require('multer');
 const path = require('path');
 const Slide = require('./models/Slides');
 
+
+
+
+app.set('views', path.join(__dirname, 'views'));
+app.use(express.static(path.join(__dirname, 'public')));
+
 const app = express();
 app.use(express.static('public'));
 
